@@ -1,10 +1,10 @@
 import "./App.css";
-import BaseLayaout from "./components/BaseLayaout";
+import { BaseLayout } from "./Containers/BaseLayout";
 
 function App() {
 	return (
 		<>
-			<BaseLayaout />
+			<BaseLayout />
 		</>
 	);
 }
