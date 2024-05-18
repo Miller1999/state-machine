@@ -1,7 +1,6 @@
-import React from "react";
 import "./Tickets.css";
 
-export const Tickets = ({ send, context }) => {
+export const Tickets = ({ send }) => {
 	const finish = () => {
 		send({ type: "FINISH" });
 	};

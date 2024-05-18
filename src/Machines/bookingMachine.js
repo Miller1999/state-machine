@@ -1,11 +1,20 @@
-import { createMachine } from "xstate";
+import { assign, createMachine } from "xstate";
 
 const bookingMachine = createMachine(
 	{
 		id: "buy plane tickets",
 		initial: "initial",
+		context: {
+			passengers: [],
+			selectCountry: "",
+		},
 		states: {
 			initial: {
+				entry: assign({
+					selectCountry: ({ context }) => (
+						(context.passengers = []), (context.selectCountry = "")
+					),
+				}),
 				on: {
 					START: {
 						target: "search",
@@ -20,7 +29,12 @@ const bookingMachine = createMachine(
 				// exit acciones que se ejecutan al salir de un estado
 				exit: "imprimirSalida",
 				on: {
-					CONTINUE: "passengers",
+					CONTINUE: {
+						target: "passengers",
+						actions: assign({
+							selectCountry: ({ event }) => event.selectCountry,
+						}),
+					},
 					CANCEL: "initial",
 				},
 			},
@@ -33,6 +47,17 @@ const bookingMachine = createMachine(
 				on: {
 					DONE: "tickets",
 					CANCEL: "initial",
+					ADD: {
+						target: "passengers",
+						actions: assign({
+							passengers: ({ context, event }) => {
+								const updatedPassengers = context.passengers.concat(
+									event.newPassenger
+								);
+								return updatedPassengers;
+							},
+						}),
+					},
 				},
 			},
 		},
