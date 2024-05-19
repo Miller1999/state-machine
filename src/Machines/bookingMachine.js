@@ -1,4 +1,39 @@
-import { assign, createMachine } from "xstate";
+import { assign, createMachine, fromPromise } from "xstate";
+// From promise necesario para trabajar con promesas
+import { fetchCountries } from "../utils/api";
+
+// Jerarquia
+// Esta es la maquina hijd
+const fillCountries = {
+	initial: "loading",
+	states: {
+		loading: {
+			invoke: {
+				id: "getCountries",
+				// Llama a la funcion que devuelve una promesa
+				src: fromPromise(() => fetchCountries()),
+				onDone: {
+					target: "success",
+					actions: assign({
+						countries: ({ event }) => event.output,
+					}),
+				},
+				onError: {
+					target: "failure",
+					actions: assign({
+						error: "Fallo el request",
+					}),
+				},
+			},
+		},
+		success: {},
+		failure: {
+			on: {
+				RETRY: { target: "loading" },
+			},
+		},
+	},
+};
 
 const bookingMachine = createMachine(
 	{
@@ -7,6 +42,8 @@ const bookingMachine = createMachine(
 		context: {
 			passengers: [],
 			selectCountry: "",
+			countries: [],
+			error: "",
 		},
 		states: {
 			initial: {
@@ -37,8 +74,15 @@ const bookingMachine = createMachine(
 					},
 					CANCEL: "initial",
 				},
+				// Aqui se insertan las maquinas hijas
+				...fillCountries,
 			},
 			tickets: {
+				after: {
+					5000: {
+						target: "initial",
+					},
+				},
 				on: {
 					FINISH: "initial",
 				},
