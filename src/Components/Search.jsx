@@ -1,5 +1,5 @@
-import React, { useState } from "react";
 import "./Search.css";
+import { useState } from "react";
 
 export const Search = ({ send, state }) => {
 	const [flight, setFlight] = useState("");

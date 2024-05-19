@@ -1,6 +1,6 @@
 import "./Tickets.css";
 
-export const Tickets = ({ send }) => {
+export const Tickets = ({ send, context }) => {
 	const finish = () => {
 		send({ type: "FINISH" });
 	};
@@ -11,9 +11,12 @@ export const Tickets = ({ send }) => {
 				Gracias por volar con book a fly 💚
 			</p>
 			<div className="Tickets-ticket">
-				<div className="Tickets-country">Colombia</div>
+				<div className="Tickets-country">{context.selectCountry}</div>
 				<div className="Tickets-passengers">
 					<span>✈</span>
+					{context.passengers.map((person, index) => {
+						return <p key={index}>{person}</p>;
+					})}
 				</div>
 			</div>
 			<button onClick={finish} className="Tickets-finalizar button">

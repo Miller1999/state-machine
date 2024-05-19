@@ -89,7 +89,11 @@ const bookingMachine = createMachine(
 			},
 			passengers: {
 				on: {
-					DONE: "tickets",
+					DONE: {
+						target: "tickets",
+						// Guard es una condicion para hacer la transicion
+						guard: "moreThanOnePassenger",
+					},
 					CANCEL: "initial",
 					ADD: {
 						target: "passengers",
@@ -112,6 +116,12 @@ const bookingMachine = createMachine(
 			imprimirInicio: () => console.log("Imprimir inicio"),
 			imprimirEntrada: () => console.log("Imprimir entrada a search"),
 			imprimirSalida: () => console.log("Imprimir salida del search"),
+		},
+		// Aqui se establecen los guards a la misma altura de actions
+		guards: {
+			moreThanOnePassenger: ({ context }) => {
+				return context.passengers.length > 0;
+			},
 		},
 	}
 );
